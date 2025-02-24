@@ -1,0 +1,181 @@
+manifest
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Ukkdepon17"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".HomeActivity"></activity>
+
+    </application>
+
+</manifest>
+
+am
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/edtUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username" />
+
+    <EditText
+        android:id="@+id/edtPass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login" />
+</LinearLayout>
+
+ma
+package com.example.ukkdepon17;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    private static final String USERNAME = "admin";
+    private static final String PASSWORD = "1234";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        EditText edtUser = findViewById(R.id.edtUser);
+        EditText edtPass = findViewById(R.id.edtPass);
+        Button btnLogin = findViewById(R.id.btnLogin);
+
+        btnLogin.setOnClickListener(v -> {
+            String user = edtUser.getText().toString();
+            String pass = edtPass.getText().toString();
+
+            if (user.equals(USERNAME) && pass.equals(PASSWORD)) {
+                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this, "Login gagal!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+}
+
+hm
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/edtHarga"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Harga Awal"
+        android:inputType="numberDecimal"/>
+
+    <EditText
+        android:id="@+id/edtDiskon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Diskon (%)"
+        android:inputType="numberDecimal"/>
+
+    <Button
+        android:id="@+id/btnHitung"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hitung Diskon"/>
+
+    <TextView
+        android:id="@+id/txtHasil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total: Rp 0"
+        android:textSize="18sp"
+        android:paddingTop="10dp"/>
+</LinearLayout>
+
+ha
+package com.example.ukkdepon17;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class HomeActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.home_main); // Pastikan layout yang digunakan benar
+
+        EditText edtHarga = findViewById(R.id.edtHarga);
+        EditText edtDiskon = findViewById(R.id.edtDiskon);
+        Button btnHitung = findViewById(R.id.btnHitung);
+        TextView txtHasil = findViewById(R.id.txtHasil);
+
+        btnHitung.setOnClickListener(v -> {
+            try {
+                double harga = Double.parseDouble(edtHarga.getText().toString());
+                double diskon = Double.parseDouble(edtDiskon.getText().toString());
+
+                // Validasi harga
+                if (harga <= 0) {
+                    txtHasil.setText("Harga harus lebih dari 0");
+                    return;
+                }
+
+                // Validasi diskon
+                if (diskon < 0 || diskon > 100) {
+                    txtHasil.setText("Diskon harus antara 0% - 100%");
+                    return;
+                }
+
+                // Hitung harga akhir setelah diskon
+                double hargaAkhir = harga - (harga * (diskon / 100));
+                txtHasil.setText("Total: Rp " + hargaAkhir);
+            } catch (NumberFormatException e) {
+                txtHasil.setText("Input tidak valid");
+            }
+        });
+    }
+}
